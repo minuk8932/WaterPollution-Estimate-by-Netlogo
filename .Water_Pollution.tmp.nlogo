@@ -121,6 +121,21 @@ GRAPHICS-WINDOW
 ticks
 30.0
 
+SLIDER
+0
+0
+0
+0
+NIL
+NIL
+0
+100
+50.0
+1
+1
+NIL
+HORIZONTAL
+
 BUTTON
 34
 246
@@ -157,9 +172,9 @@ NIL
 
 SLIDER
 33
-45
+54
 205
-78
+87
 initial-number-fish
 initial-number-fish
 0
@@ -180,6 +195,21 @@ initial-number-bacterias
 0
 1000
 0.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+33
+149
+205
+182
+waste-waters
+waste-waters
+0
+10
+3.0
 1
 1
 NIL
