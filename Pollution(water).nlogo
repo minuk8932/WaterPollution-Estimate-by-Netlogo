@@ -1,107 +1,125 @@
-breed [ fish a-fish ]
-breed [ bacterias bacteria]
+breed [ fishes fish ]
+breed [ bacterias bacteria ]
+
+turtles-own [ health ]
 
 patches-own [
   pollution
-  is-waste-water?
+  is-power-plant?
 ]
 
 to setup
   clear-all
- ; ifelse netlogo-web? [set max-bacteria 10000] [set max-bacteria 30000]
+
+  set-default-shape fishes "fish"
 
   ask patches [
-    set pcolor blue
     set pollution 0
-    set is-waste-water? false
+    set is-power-plant? false
   ]
 
-  create-waste-waters
+  create-power-plants
 
-  ask patches[ pollute ]
+  ask patches [ pollute ]
 
-
-  set-default-shape fish "fish"
-
-  create-fish initial-number-fish [
-      setxy random-xcor random-ycor
-      set size 4
-      set color yellow
+  create-fishes initial-population [
+    set color black
+    setxy random-pxcor random-pycor
+    set health 5
   ]
 
-  create-bacterias initial-number-bacterias [
-      setxy random-xcor random-ycor
-      set size 2
-      set color green
-  ]
-
-  ask patches [
-    if pxcor = min-pxcor [
-      set pcolor black
-    ]
-  ]
   reset-ticks
 end
 
-
 to go
-  move-turtles
- ask patches with [ pcolor = black ] [
-    let probability 1
 
-    ask neighbors4 with [ pcolor = blue ] [
-      if random 100 < probability [
-        set pcolor black
-      ]
-    ]
+  if not any? fishes [ stop ] ; 더이상 물고기가 없는 경우 멈춤 -> 필요 없을지도
+
+  ask fishes [
+    wander
+    reproduce
+    maybe-plant
+    eat-pollution
+    maybe-die
   ]
 
   diffuse pollution 0.8
 
   ask patches [ pollute ]
 
-  tick ;; advance the clock by one “tick”
+  ask bacterias [
+    cleanup
+    maybe-die
+  ]
+
+  tick
 end
 
-to create-waste-waters
-  ask n-of waste-waters patches [
-    set is-waste-water? true
+to create-power-plants
+  ask n-of power-plants patches [
+    set is-power-plant? true
   ]
 end
 
-to pollute
-  if is-waste-water? [
-    set pcolor brown
+to pollute  ;; patch procedure
+  if is-power-plant? [
+    set pcolor red
     set pollution polluting-rate
   ]
   set pcolor scale-color red (pollution - .1) 5 0
 end
 
-to purification
-  set pcolor blue + 3
+to cleanup  ;; bacteria procedure
+  set pcolor green + 3
   set pollution max (list 0 (pollution - 1))
   ask neighbors [
     set pollution max (list 0 (pollution - .5))
   ]
+  set health health - 0.1
 end
 
-to move-turtles
-  ask turtles [
-   rt random 50
-   lt random 50
-   fd 1
-  ]
+to wander  ;; fish procedure
+  rt random-float 50
+  lt random-float 50
+  fd 1
+  set health health - 0.1
+end
 
+to reproduce  ;; fish procedure
+  if health > 4 and random-float 1 < birth-rate [
+    hatch-fishes 1 [
+      set health 5
+    ]
+  ]
+end
+
+to maybe-plant  ;; fish procedure
+  if random-float 1 < planting-rate [
+    hatch-bacterias 1 [
+      set health 5
+      set color green
+    ]
+  ]
+end
+
+to eat-pollution  ;; fish procedure
+  if pollution > 0.5 [
+    set health (health - (pollution / 10))
+  ]
+end
+
+to maybe-die  ;; die if you run out of health
+  if health <= 0 [ die ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-313
-61
-727
-476
+278
+10
+783
+460
 -1
 -1
-4.02
+7.0
 1
 10
 1
@@ -111,36 +129,126 @@ GRAPHICS-WINDOW
 1
 1
 1
--50
-50
--50
-50
+-35
+35
+-31
+31
+0
+0
 1
-1
-1
-ticks
+days
 30.0
 
 SLIDER
-0
-0
-0
-0
-NIL
-NIL
+87
+28
+259
+61
+initial-population
+initial-population
 0
 100
-50.0
+30.0
+2
+1
+NIL
+HORIZONTAL
+
+SLIDER
+88
+83
+260
+116
+birth-rate
+birth-rate
+0
+0.3
+0.1
+0.02
+1
+NIL
+HORIZONTAL
+
+SLIDER
+88
+137
+260
+170
+planting-rate
+planting-rate
+0
+0.1
+0.05
+0.01
+1
+NIL
+HORIZONTAL
+
+SLIDER
+89
+193
+261
+226
+power-plants
+power-plants
+0
+10
+2.0
 1
 1
 NIL
 HORIZONTAL
 
+SLIDER
+90
+248
+262
+281
+polluting-rate
+polluting-rate
+0
+10
+3.0
+1
+1
+NIL
+HORIZONTAL
+
+MONITOR
+172
+299
+261
+344
+count fishes
+count fishes
+17
+1
+11
+
+PLOT
+61
+362
+261
+512
+Water Status
+time
+pop
+0.0
+100.0
+0.0
+111.0
+true
+true
+"" ""
+PENS
+"DO" 1.0 0 -11085214 true "" "plot count turtles"
+"BOD" 1.0 0 -5207188 true "" "plot count turtles"
+
 BUTTON
-34
-246
-100
-279
+14
+304
+80
+337
 NIL
 setup
 NIL
@@ -154,12 +262,12 @@ NIL
 1
 
 BUTTON
-124
-246
-187
-279
+96
+303
+159
+336
 NIL
-go\n\n
+go
 T
 1
 T
@@ -169,51 +277,6 @@ NIL
 NIL
 NIL
 1
-
-SLIDER
-33
-54
-205
-87
-initial-number-fish
-initial-number-fish
-0
-100
-0.0
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-33
-102
-246
-135
-initial-number-bacterias
-initial-number-bacterias
-0
-1000
-0.0
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-33
-149
-205
-182
-waste-waters
-waste-waters
-0
-10
-3.0
-1
-1
-NIL
-HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
