@@ -22,17 +22,20 @@ to setup
 
   ask patches [ pollute ]
 
+  ; 물고기 설정
   create-fishes initial-number-fishes [
     set color yellow
     setxy random-pxcor random-pycor
-    set size 4
+    set size 2
     set health 5
   ]
 
+  ; 박테리아 설정
    create-bacterias initial-number-bacterias [
       setxy random-xcor random-ycor
-      set size 2
+      set size 1
       set color green
+      set health 5
   ]
 
   reset-ticks
@@ -82,14 +85,14 @@ to cleanup  ;; bacteria procedure
   ask neighbors [
     set pollution max (list 0 (pollution - .5))
   ]
-  set health health - 0.3
+  set health health - 0.1
 end
 
 to wander  ;; fish procedure
   rt random 50
   lt random 50
   fd 1
-  set health health - 0.3
+  set health health - 0.1
 end
 
 to reproduce  ;; fish procedure
@@ -155,7 +158,7 @@ initial-number-fishes
 initial-number-fishes
 0
 100
-40.0
+14.0
 2
 1
 NIL
@@ -170,7 +173,7 @@ birth-rate
 birth-rate
 0
 0.3
-0.3
+0.1
 0.02
 1
 NIL
@@ -200,7 +203,7 @@ wastewater-inflows
 wastewater-inflows
 0
 10
-2.0
+4.0
 1
 1
 NIL
@@ -222,10 +225,10 @@ NIL
 HORIZONTAL
 
 MONITOR
-164
-353
-253
-398
+851
+34
+940
+79
 count fishes
 count fishes
 17
@@ -233,10 +236,10 @@ count fishes
 11
 
 PLOT
-53
-416
-253
-566
+854
+112
+1250
+397
 Water Status
 time
 pop
@@ -250,12 +253,13 @@ true
 PENS
 "bacterias" 1.0 0 -11085214 true "" "plot count bacterias"
 "fishes" 1.0 0 -5207188 true "" "plot count fishes"
+"pollution" 1.0 0 -8630108 true "" "plot sum [ pollution ] of patches"
 
 BUTTON
-6
-358
-72
-391
+52
+365
+118
+398
 NIL
 setup
 NIL
@@ -269,10 +273,10 @@ NIL
 1
 
 BUTTON
-88
-357
-151
-390
+134
+364
+197
+397
 NIL
 go
 T
@@ -294,7 +298,7 @@ initial-number-bacterias
 initial-number-bacterias
 0
 1000
-200.0
+56.0
 8
 1
 NIL
