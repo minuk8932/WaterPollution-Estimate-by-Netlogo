@@ -42,9 +42,6 @@ to setup
 end
 
 to go
-
-;  if not any? fishes [ stop ] ; 더이상 물고기가 없는 경우 멈춤 -> 필요 없을지도
-
   ask fishes [
     wander
     reproduce
@@ -80,7 +77,6 @@ to pollute  ;; patch procedure
 end
 
 to cleanup  ;; bacteria procedure
- ; set pcolor green + 3
   set pollution max (list 0 (pollution - 1))
   ask neighbors [
     set pollution max (list 0 (pollution - .5))
@@ -203,7 +199,7 @@ wastewater-inflows
 wastewater-inflows
 0
 10
-4.0
+3.0
 1
 1
 NIL
@@ -218,7 +214,7 @@ polluting-rate
 polluting-rate
 0
 10
-3.0
+2.0
 1
 1
 NIL
@@ -298,7 +294,7 @@ initial-number-bacterias
 initial-number-bacterias
 0
 1000
-56.0
+128.0
 8
 1
 NIL
