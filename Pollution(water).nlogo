@@ -5,7 +5,7 @@ turtles-own [ health ]
 
 patches-own [
   pollution
-  is-power-plant?
+  is-wastewater-inflow?
 ]
 
 to setup
@@ -15,17 +15,24 @@ to setup
 
   ask patches [
     set pollution 0
-    set is-power-plant? false
+    set is-wastewater-inflow? false
   ]
 
-  create-power-plants
+  create-wastewater-inflows
 
   ask patches [ pollute ]
 
-  create-fishes initial-population [
-    set color black
+  create-fishes initial-number-fishes [
+    set color yellow
     setxy random-pxcor random-pycor
+    set size 4
     set health 5
+  ]
+
+   create-bacterias initial-number-bacterias [
+      setxy random-xcor random-ycor
+      set size 2
+      set color green
   ]
 
   reset-ticks
@@ -33,7 +40,7 @@ end
 
 to go
 
-  if not any? fishes [ stop ] ; 더이상 물고기가 없는 경우 멈춤 -> 필요 없을지도
+;  if not any? fishes [ stop ] ; 더이상 물고기가 없는 경우 멈춤 -> 필요 없을지도
 
   ask fishes [
     wander
@@ -55,14 +62,14 @@ to go
   tick
 end
 
-to create-power-plants
-  ask n-of power-plants patches [
-    set is-power-plant? true
+to create-wastewater-inflows
+  ask n-of wastewater-inflows patches [
+    set is-wastewater-inflow? true
   ]
 end
 
 to pollute  ;; patch procedure
-  if is-power-plant? [
+  if is-wastewater-inflow? [
     set pcolor red
     set pollution polluting-rate
   ]
@@ -70,19 +77,19 @@ to pollute  ;; patch procedure
 end
 
 to cleanup  ;; bacteria procedure
-  set pcolor green + 3
+ ; set pcolor green + 3
   set pollution max (list 0 (pollution - 1))
   ask neighbors [
     set pollution max (list 0 (pollution - .5))
   ]
-  set health health - 0.1
+  set health health - 0.3
 end
 
 to wander  ;; fish procedure
-  rt random-float 50
-  lt random-float 50
+  rt random 50
+  lt random 50
   fd 1
-  set health health - 0.1
+  set health health - 0.3
 end
 
 to reproduce  ;; fish procedure
@@ -140,57 +147,57 @@ days
 30.0
 
 SLIDER
-87
-28
-259
-61
-initial-population
-initial-population
+51
+81
+237
+114
+initial-number-fishes
+initial-number-fishes
 0
 100
-30.0
+40.0
 2
 1
 NIL
 HORIZONTAL
 
 SLIDER
-88
-83
-260
-116
+52
+136
+224
+169
 birth-rate
 birth-rate
 0
 0.3
-0.1
+0.3
 0.02
 1
 NIL
 HORIZONTAL
 
 SLIDER
-88
-137
-260
-170
+52
+190
+224
+223
 planting-rate
 planting-rate
 0
 0.1
-0.05
+0.04
 0.01
 1
 NIL
 HORIZONTAL
 
 SLIDER
-89
-193
-261
-226
-power-plants
-power-plants
+53
+246
+225
+279
+wastewater-inflows
+wastewater-inflows
 0
 10
 2.0
@@ -200,10 +207,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-90
-248
-262
-281
+54
+301
+226
+334
 polluting-rate
 polluting-rate
 0
@@ -215,10 +222,10 @@ NIL
 HORIZONTAL
 
 MONITOR
-172
-299
-261
-344
+164
+353
+253
+398
 count fishes
 count fishes
 17
@@ -226,10 +233,10 @@ count fishes
 11
 
 PLOT
-61
-362
-261
-512
+53
+416
+253
+566
 Water Status
 time
 pop
@@ -241,14 +248,14 @@ true
 true
 "" ""
 PENS
-"DO" 1.0 0 -11085214 true "" "plot count turtles"
-"BOD" 1.0 0 -5207188 true "" "plot count turtles"
+"bacterias" 1.0 0 -11085214 true "" "plot count bacterias"
+"fishes" 1.0 0 -5207188 true "" "plot count fishes"
 
 BUTTON
-14
-304
-80
-337
+6
+358
+72
+391
 NIL
 setup
 NIL
@@ -262,10 +269,10 @@ NIL
 1
 
 BUTTON
-96
-303
-159
-336
+88
+357
+151
+390
 NIL
 go
 T
@@ -277,6 +284,21 @@ NIL
 NIL
 NIL
 1
+
+SLIDER
+49
+33
+254
+66
+initial-number-bacterias
+initial-number-bacterias
+0
+1000
+200.0
+8
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
